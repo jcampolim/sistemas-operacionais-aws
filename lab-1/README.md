@@ -20,7 +20,7 @@ Nessa etapa, o grupo instalou o "Development Tools", crucial para conseguir comp
 
 ### Editor de texto
 
-Para editar o conteúdo do arquivo helloworld.c, o grupo escolheu usar o eidtor de texto VI pela comodidade, uma vez que ele já vem integrado ao ambiente.
+Para editar o conteúdo do arquivo helloworld.c, o grupo escolheu usar o editor de texto VI pela comodidade, uma vez que ele já vem integrado ao ambiente.
 
 ![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/lab1-img3.png)
 
