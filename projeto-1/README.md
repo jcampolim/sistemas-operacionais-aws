@@ -192,28 +192,41 @@ de verificações para adicionar a quantidade de segundos certa ao tempo total.
 
 Para utilizar processos, o grupo optou por fazer cada processo filho como uma pessoa, sendo utilizado para fazer a atualização do tempo. O resultado final da implementação foi: 
 
-// imagens do código
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img1.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj2-img1.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj3-img1.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj4-img1.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj5-img1.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj6-img1.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj7-img1.jpg)
 
 > Obs.: Os comentários desse código explicam apenas o funcionamento dos processos dentro da implementação, para mais detalhes da lógica de resolução do problema, verificar os comentários do código base.
 
 Ao executar esse código, o grupo obteve todos os resultados como esperado, inclusive os casos de teste extras.
 
-// imagem execução
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img8.jpg)
 
 #### Thread
 
 Para utilizar threads, o grupo optou por fazer cada thread como uma pessoa, então cada thread foi criada com o intuito de atualizar o valor do tempo. O código final é: 
 
-// imagens do código
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img9.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img10.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img11.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img12.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img13.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img14.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img15.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img16.jpg)
 
 > Obs.: Os comentários desse código explicam apenas o funcionamento das threads dentro da implementação, para mais detalhes da lógica de resolução do problema, verificar os comentários do código base.
 
 Ao executar esse código, o grupo obteve todos os resultados como esperado, inclusive os casos de teste extras.
 
-// imagem execução
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img17.jpg)
 
 #### Git 
 
 ##### Criação dos arquivos
 
-##### Upload no repositório do Github
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img18.jpg)
