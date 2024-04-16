@@ -14,10 +14,10 @@ duas variáveis de controle, uma seria o tamanho da fila, enquanto a outra a pos
 
 Após ter os dados devidamente armazenados, o próximo passo é percorrer as duas filas respeitando a ordem de chegada de cada pessoa. 
 
-Então primeiro é feita a comparação de qual topo é menor, indicando qual pessoa chegou primeiro. Depois, é feita uma análise para verificar se as próximas pessoas dessa fila conseguem entrar na
+Então, primeiro é feita a comparação de qual topo é menor, indicando qual pessoa chegou primeiro. Depois, é feita uma análise para verificar se as próximas pessoas dessa fila conseguem entrar na
 escada antes que a escada mude de direção. Quando todas as pessoas disponíveis já entraram na escada, então a escada inverte a direção e repete todo o processo para o outro sentido. 
 
-Esse algoritmo garante que duas pessoas nunca usem a escada ao mesmo por fazer a analise individual de cada pessoa, respeitando não apenas a ordem de chegada, como também a ordem de prioridade.
+Esse algoritmo garante que duas pessoas de sentidos contrários nunca usem a escada ao mesmo por fazer a análise individual de cada pessoa, respeitando não apenas a ordem de chegada, como também a ordem de prioridade.
 
 #### 2. Como garantir que somente uma das direções está ativa de cada vez em cada uma das abordagens?
 
@@ -29,13 +29,12 @@ ocorre separadamente.
 #### 3. Discorra sobre as diferenças entre as implementações utilizando threads e processos e diga qual foi mais eficiente na solução do problema, justificando sua resposta.
 
 Avaliando a lógica do código, as duas soluções foram parecidas, já que as threads e os processos filhos foram criados para representar cada pessoa no momento de alteração da variável global "tempo". Pórem, 
-analisando o código, é possível perceber que o código de threads é muito mais eficiente por conta do compartilhamento de memória, ficando um código mais legivel e mais organizado. Além disso, o grupo
+analisando o código, é possível perceber que o código de threads é muito mais eficiente por conta do compartilhamento de memória, ficando um código mais legível e mais organizado. Além disso, o grupo
 optou por fazer o uso de pthreads, facilitando na criação e execução de cada thread.
 
-Já o código de processos é mais extenso e com muitos trechos de grandes repetições, deixando o código mais poluído visualmente e menos intuitivo de se entender. Para conseguir criar vários processos, 
-foi necessário criar um vetor para armazenar o ID de cada processo filho que será criado; além de uma matriz com as pipes, também uma para cada processo filho, que são utilizadas na comunição entre o processo 
-pai e o processo filho. 
+Já o código de processos é mais extenso, mais poluído visualmente e menos intuitivo de se entender. Em um primeiro momento, para conseguir criar vários processos, o grupo optou por criar um vetor para armazenar o ID de cada processo filho que será criado; além de uma matriz com as pipes, também uma para cada processo filho, que seriam utilizadas na comunição entre o processo pai e o processo filho. Entretanto, o grupo decidiu seguir por outro caminho e fazer uma função que cria cada processo.
 
+Ainda assim, é mais eficiente e menos prolixo fazer a utilização de threads do que de processos.
 
 ### Explicação
 
@@ -188,17 +187,17 @@ de verificações para adicionar a quantidade de segundos certa ao tempo total.
 
 > Obs.: Para mais detalhes da lógica usada, é possível verificar os comentários do código acima.
 
-#### Processo
+#### Processos
 
 Para utilizar processos, o grupo optou por fazer cada processo filho como uma pessoa, sendo utilizado para fazer a atualização do tempo. O resultado final da implementação foi: 
 
 ![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img1.jpg)
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj2-img1.jpg)
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj3-img1.jpg)
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj4-img1.jpg)
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj5-img1.jpg)
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj6-img1.jpg)
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj7-img1.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img2.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img3.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img4.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img5.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img6.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img7.jpg)
 
 > Obs.: Os comentários desse código explicam apenas o funcionamento dos processos dentro da implementação, para mais detalhes da lógica de resolução do problema, verificar os comentários do código base.
 
@@ -206,7 +205,7 @@ Ao executar esse código, o grupo obteve todos os resultados como esperado, incl
 
 ![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img8.jpg)
 
-#### Thread
+#### Threads
 
 Para utilizar threads, o grupo optou por fazer cada thread como uma pessoa, então cada thread foi criada com o intuito de atualizar o valor do tempo. O código final é: 
 
