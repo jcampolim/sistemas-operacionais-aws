@@ -1,171 +1,158 @@
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
+#include <unistd.h>
 
+// Cria um struct para passar os dados para a função da thread
+typedef struct {
+  int n;
+  int qtde0;
+  int qtde1;
+  int *pessoas0;
+  int *pessoas1;
+} Fila;
+
+// Variáveis globais que serão atualizadas pelas duas threads em execução: tempo total
+// da escada, topo de cada pilha e direção atual da escada
 int tempo = 0;
+int direcao, pos0 = 0, pos1 = 0;
 
-// Funcao que sera executada quando a thread for criada e ira atualizar o valor do tempo
-void *attTempo(void *t) {
-	int *aux = (int *)t;
-	tempo = *aux;
+// Função de thread que é executada para a fila 0
+void *threadFila0(void *f) {
+  // O parametro da função é um struct Fila, contendo os dados de cada pessoa
+  Fila *fila = (Fila *)f;
+
+  // Executa a repetição até que todas as pessoas da direção 0 entrem na escada
+  while (pos0 < fila->qtde0) {
+    if ((fila->pessoas0[pos0] < fila->pessoas1[pos1] && pos0 < fila->qtde0) || fila->qtde1 == 0 || fila->qtde1 == pos1) {
+      printf("Fila 0 - %d\n", fila->pessoas0[pos0]);
+      if (fila->pessoas0[pos0] >= tempo) {
+        tempo = fila->pessoas0[pos0] + 10;
+        pos0++;
+
+        direcao = 0;
+      }
+
+      if (pos0 + pos1 == 0) {
+        tempo += 10;
+        pos0++;
+      }
+
+      if (fila->pessoas0[pos0] <= tempo && pos0 < fila->qtde0) {
+        if (direcao == 1) {
+          while (fila->pessoas0[pos0] <= tempo && pos0 < fila->qtde0) {
+            pos0++;
+          }
+          fila->pessoas0[pos0 - 1] = tempo;
+          tempo += 10;
+        }
+        while (fila->pessoas0[pos0] <= tempo && pos0 < fila->qtde0) {
+          tempo += (fila->pessoas0[pos0] - fila->pessoas0[pos0 - 1]);
+          pos0++;
+        }
+
+        direcao = 0;
+      }
+    }
+  }
+  // A thread para de executar quando todas as pessoas do sentido 0 já passaram pela escada
+  pthread_exit(NULL);
+}
+
+// Função de thread que é executada para a fila 1
+void *threadFila1(void *f) {
+  // O parametro da função é um struct Fila, contendo os dados de cada pessoa
+  Fila *fila = (Fila *)f;
+
+  // Executa a repetição até que todas as pessoas da direção 1 entrem na escada
+  while (pos1 < fila->qtde1) {
+    if ((fila->pessoas0[pos0] > fila->pessoas1[pos1] && pos1 < fila->qtde1) || fila->qtde0 == 0 || fila->qtde0 == pos0) {
+      printf("Fila 1 - %d\n", fila->pessoas1[pos1]);
+      if (fila->pessoas1[pos1] >= tempo) {
+        tempo = fila->pessoas1[pos1] + 10;
+        pos1++;
+
+        direcao = 1;
+      }
+
+      if (pos0 + pos1 == 0) {
+        tempo += 10;
+        pos1++;
+      }
+
+      if (fila->pessoas1[pos1] <= tempo && pos1 < fila->qtde1) {
+        if (direcao == 0) {
+          while (fila->pessoas1[pos1] <= tempo && pos1 < fila->qtde1) {
+            pos1++;
+          }
+          fila->pessoas1[pos1 - 1] = tempo;
+          tempo += 10;
+        }
+        while (fila->pessoas1[pos1] <= tempo && pos1 < fila->qtde1) {
+          tempo += (fila->pessoas1[pos1] - fila->pessoas1[pos1 - 1]);
+          pos1++;
+        }
+
+        direcao = 1;
+      }
+    }
+  }
+  // A thread para de executar quando todas as pessoas do sentido 1 já passaram pela escada
+  pthread_exit(NULL);
 }
 
 int main() {
-    // O ID da thread, necessario para identificar as threads
-    pthread_t tid; 
+  // Cria dois IDs, um para cada thread
+  pthread_t tid1, tid2;
 
-    int n, direcao, direcaoInicial;
-    scanf("%d", &n);
+  Fila fila;
 
-    int **pessoas = (int **)malloc(n * sizeof(int *));
-    pessoas[0] = (int *)malloc(n * sizeof(int));
-    pessoas[1] = (int *)malloc(n * sizeof(int));
+  int direcaoInicial;
+  scanf("%d", &fila.n);
 
-    int tam[] = {0, 0};
-    while(tam[0] + tam[1] < n) {
-        int aux;
-        scanf("%d %d", &aux, &direcao);
+  fila.pessoas0 = (int *)malloc(fila.n * sizeof(int));
+  fila.pessoas1 = (int *)malloc(fila.n * sizeof(int));
 
-        if(tam[0] + tam[1] == 0) {
-            direcaoInicial = direcao;
-        }
-    
-        if(direcao == 0) {
-            pessoas[0][tam[0]] = aux;
-            tam[0]++;
-        } else {
-            pessoas[1][tam[1]] = aux;
-            tam[1]++;
-        }
+  fila.qtde0 = 0, fila.qtde1 = 0;
+  while (fila.qtde0 + fila.qtde1 < fila.n) {
+    int aux;
+    scanf("%d %d", &aux, &direcao);
+
+    if (fila.qtde0 + fila.qtde1 == 0) {
+      direcaoInicial = direcao;
     }
 
-    int pos[] = {0, 0};
-    int t = pessoas[direcaoInicial][0];
-
-    // Funcao para criar uma thread, o primeiro parametro eh o ID da thread, o segundo sao os atributos (podem ser NULL),
-    // o terceiro eh o endereco da funcao que sera executada pela thread e o ultimo sao os parametros da funcao
-    pthread_create(&tid, NULL, attTempo, (void *)&t);
-    // Aguarda o termino da thread para continuar a execucao
-    pthread_join(tid, NULL);
-
-    direcao = direcaoInicial;
-
-    while(pos[0] < tam[0] || pos[1] < tam[1]) {
-        if((pessoas[0][pos[0]] < pessoas[1][pos[1]] && pos[0] < tam[0]) || tam[1] == 0 || tam[1] == pos[1]) {
-            if(pessoas[0][pos[0]] >= tempo) {
-                t = pessoas[0][pos[0]] + 10;
-
-                // Funcao para criar uma thread, o primeiro parametro eh o ID da thread, o segundo sao os atributos (podem ser NULL),
-                // o terceiro eh o endereco da funcao que sera executada pela thread e o ultimo sao os parametros da funcao
-                pthread_create(&tid, NULL, attTempo, (void *)&t);
-                // Aguarda o termino da thread para continuar a execucao
-                pthread_join(tid, NULL);
-
-                pos[0]++;
-                
-                direcao = 0;
-            }
-
-            if(pos[0] + pos[1] == 0) {
-                t  = tempo + 10;
-
-                // Funcao para criar uma thread, o primeiro parametro eh o ID da thread, o segundo sao os atributos (podem ser NULL),
-                // o terceiro eh o endereco da funcao que sera executada pela thread e o ultimo sao os parametros da funcao
-                pthread_create(&tid, NULL, attTempo, (void *)&t);
-                // Aguarda o termino da thread para continuar a execucao
-                pthread_join(tid, NULL);
-
-                pos[0]++;
-            }
-
-            if(pessoas[0][pos[0]] <= tempo && pos[0] < tam[0]) {
-                if(direcao == 1) {
-                    while(pessoas[0][pos[0]] <= tempo && pos[0] < tam[0]) {
-                        pos[0]++;
-                    }
-                    pessoas[0][pos[0] - 1] = tempo;
-                    t = tempo + 10;
-
-                    // Funcao para criar uma thread, o primeiro parametro eh o ID da thread, o segundo sao os atributos (podem ser NULL),
-                    // o terceiro eh o endereco da funcao que sera executada pela thread e o ultimo sao os parametros da funcao
-                    pthread_create(&tid, NULL, attTempo, (void *)&t);
-                    // Aguarda o termino da thread para continuar a execucao
-                    pthread_join(tid, NULL);
-                }
-                while(pessoas[0][pos[0]] <= tempo && pos[0] < tam[0]) {
-                    t = tempo + (pessoas[0][pos[0]] - pessoas[0][pos[0] - 1]);
-
-                    // Funcao para criar uma thread, o primeiro parametro eh o ID da thread, o segundo sao os atributos (podem ser NULL),
-                    // o terceiro eh o endereco da funcao que sera executada pela thread e o ultimo sao os parametros da funcao
-                    pthread_create(&tid, NULL, attTempo, (void *)&t);
-                    // Aguarda o termino da thread para continuar a execucao
-                    pthread_join(tid, NULL);
-
-                    pos[0]++;
-                }
-
-                direcao = 0;
-            }
-        } else if((pessoas[0][pos[0]] > pessoas[1][pos[1]] && pos[1] < tam[1]) || tam[0] == 0 || tam[0] == pos[0]) {
-            if(pessoas[1][pos[1]] > tempo) {
-                t = pessoas[1][pos[1]] + 10;
-
-                // Funcao para criar uma thread, o primeiro parametro eh o ID da thread, o segundo sao os atributos (podem ser NULL),
-                // o terceiro eh o endereco da funcao que sera executada pela thread e o ultimo sao os parametros da funcao
-                pthread_create(&tid, NULL, attTempo, (void *)&t);
-                // Aguarda o termino da thread para continuar a execucao
-                pthread_join(tid, NULL);
-
-                pos[1]++;
-                
-                direcao = 1;
-            }
-
-            if(pos[0] + pos[1] == 0) {
-                t = tempo + 10;
-
-                // Funcao para criar uma thread, o primeiro parametro eh o ID da thread, o segundo sao os atributos (podem ser NULL),
-                // o terceiro eh o endereco da funcao que sera executada pela thread e o ultimo sao os parametros da funcao
-                pthread_create(&tid, NULL, attTempo, (void *)&t);
-                // Aguarda o termino da thread para continuar a execucao
-                pthread_join(tid, NULL);
-
-                pos[1]++;
-            }
-
-            if(pessoas[1][pos[1]] <= tempo && pos[1] < tam[1]) {
-                if(direcao == 0) {
-                    while(pessoas[1][pos[1]] <= tempo && pos[1] < tam[1]) {
-                        pos[1]++;
-                    }
-                    pessoas[1][pos[1] - 1] = tempo;
-                    t = tempo + 10;
-
-                    // Funcao para criar uma thread, o primeiro parametro eh o ID da thread, o segundo sao os atributos (podem ser NULL),
-                    // o terceiro eh o endereco da funcao que sera executada pela thread e o ultimo sao os parametros da funcao
-                    pthread_create(&tid, NULL, attTempo, (void *)&t);
-                    // Aguarda o termino da thread para continuar a execucao
-                    pthread_join(tid, NULL);
-                }
-                while(pessoas[1][pos[1]] <= tempo && pos[1] < tam[1]) {
-                    t = tempo + (pessoas[1][pos[1]] - pessoas[1][pos[1] - 1]);
-
-                    // Funcao para criar uma thread, o primeiro parametro eh o ID da thread, o segundo sao os atributos (podem ser NULL),
-                    // o terceiro eh o endereco da funcao que sera executada pela thread e o ultimo sao os parametros da funcao
-                    pthread_create(&tid, NULL, attTempo, (void *)&t);
-                    // Aguarda o termino da thread para continuar a execucao
-                    pthread_join(tid, NULL);
-
-                    pos[1]++;
-                }
-
-                direcao = 1;
-            }
-        }
+    if (direcao == 0) {
+      fila.pessoas0[fila.qtde0] = aux;
+      fila.qtde0++;
+    } else {
+      fila.pessoas1[fila.qtde1] = aux;
+      fila.qtde1++;
     }
+  }
 
-    printf("%d\n", tempo);
-    free(pessoas);
+  printf("\n");
+  direcao = direcaoInicial;
 
-    return 0;
+  if (direcaoInicial == 0) {
+    tempo = fila.pessoas0[0];
+  } else {
+    tempo = fila.pessoas1[0];
+  }
+
+  // Cria uma thread para cada sentido, a thread do sentido 0 chama a função
+  // para o sentido 0 e a thread do sentido 1 chama a função para o sentido 1
+  pthread_create(&tid1, NULL, threadFila0, (void *)&fila);
+  pthread_create(&tid2, NULL, threadFila1, (void *)&fila);
+
+  // Espera a execução das duas threads 
+  pthread_join(tid1, NULL);
+  pthread_join(tid2, NULL);
+
+  printf("\nTempo = %d\n", tempo);
+
+  free(fila.pessoas0);
+  free(fila.pessoas1);
+
+  return 0;
 }
