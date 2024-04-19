@@ -8,224 +8,72 @@
 
 #### 1. Qual a estratégia que você utilizou para evitar que duas pessoas acessem a escada rolante ao mesmo tempo em cada abordagem?
 
-A estratégia usada para evitar que duas pessoas acessem a escada rolante ao mesmo tempo foi inicialmente ler os valores de todas as pessoas e armazená-lo em duas filas, uma fila para cada direção. Porém, a
-linguagem C não possui nenhuma biblioteca com uma fila já implementada, então o grupo optou por fazer uma matriz de duas linhas, uma para cada fila, e simular o comportamento dessa estrutura de dados utilizando 
-duas variáveis de controle, uma seria o tamanho da fila, enquanto a outra a posição do elemento que está no topo.
+Em ambas soluções a estratégia usada para evitar que duas pessoas acessem a escada rolante ao mesmo tempo foi parecida. No código usando processos,
+foram criados dois processos filhos, um para cada sentido da escada. Depois disso, cada processo entra em uma repetição até que todas as pessoas do seu sentido 
+acessem a escada rolante; dentro dessa repetição, há uma série de condições que garatem que somente pessoas de um único sentido estão acessando a escada.
 
-Após ter os dados devidamente armazenados, o próximo passo é percorrer as duas filas respeitando a ordem de chegada de cada pessoa. 
-
-Então, primeiro é feita a comparação de qual topo é menor, indicando qual pessoa chegou primeiro. Depois, é feita uma análise para verificar se as próximas pessoas dessa fila conseguem entrar na
-escada antes que a escada mude de direção. Quando todas as pessoas disponíveis já entraram na escada, então a escada inverte a direção e repete todo o processo para o outro sentido. 
-
-Esse algoritmo garante que duas pessoas de sentidos contrários nunca usem a escada ao mesmo por fazer a análise individual de cada pessoa, respeitando não apenas a ordem de chegada, como também a ordem de prioridade.
+No código usando threads algo muito semelhante ocorre, uma vez que são criadas duas threads (uma para cada sentido da escada rolante), cada thread 
+também executa uma repetição até que todas as pessoas tenham acessado a escada e um conjunto de condições dentro da repetição impede que pessoas de sentidos opostos
+acessem a escada ao mesmo tempo.
 
 #### 2. Como garantir que somente uma das direções está ativa de cada vez em cada uma das abordagens?
 
-Como o código faz a análise individual de cada pessoa, nunca terão duas pessoas sendo executadas ao mesmo tempo, então só haverá uma direção ativa.
+O código utilizando processos e o código utilizando threads possuem a mesma ideia ao criar um processo filho ou uma thread para cada sentido e executar
+uma repetição em cada processo filho ou thread. A primeira coisa nessa repetição é uma condição, que verifica se a próxima pessoa da fila que está no sentido do 
+processo ou da thread em questão é a próxima pessoa que pode entrar na escada. Se sim, são realizadas uma série de condições para encontrar a quantidade 
+de tempo que deverá ser adicionada ao funcionamento da escada. Se não, a repetição continua sendo executada até que os valores sejam alterados (mudando a 
+pessoa que seria a próxima a entrar na escada) pelo outro processo filho ou outra thread.
 
-Na parte de processos e threads, isso foi garantido, já que a criação dos processos filhos e das threads ocorre somente quando é preciso fazer alguma alteração no valor da variável "tempo" e cada alteração
-ocorre separadamente.
+Dessa forma, duas direções nunca estão ativas ao mesmo tempo.
 
 #### 3. Discorra sobre as diferenças entre as implementações utilizando threads e processos e diga qual foi mais eficiente na solução do problema, justificando sua resposta.
 
-Avaliando a lógica do código, as duas soluções foram parecidas, já que as threads e os processos filhos foram criados para representar cada pessoa no momento de alteração da variável global "tempo". Pórem, 
-analisando o código, é possível perceber que o código de threads é muito mais eficiente por conta do compartilhamento de memória, ficando um código mais legível e mais organizado. Além disso, o grupo
-optou por fazer o uso de pthreads, facilitando na criação e execução de cada thread.
+Na implementação do código usando processos, foram criados dois processos filhos para representar cada direção da escada rolante. Esses dois processos são
+executados simultaneamente e eles se comunicam por meio da memória compartilhada; dessa forma, eles conseguem se comunicar para ver qual pessoa é a próxima a 
+entrar na escada e qual é o valor do tempo atual. Na implementação utilizando threads a estratégia é a mesma: foram criadas duas threads, uma para cada 
+sentido da escada e elas são executadas simultaneamente.
 
-Já o código de processos é mais extenso, mais poluído visualmente e menos intuitivo de se entender. Em um primeiro momento, para conseguir criar vários processos, o grupo optou por criar um vetor para armazenar o ID de cada processo filho que será criado; além de uma matriz com as pipes, também uma para cada processo filho, que seriam utilizadas na comunição entre o processo pai e o processo filho. Entretanto, o grupo decidiu seguir por outro caminho e fazer uma função que cria cada processo.
+A primeira diferença entre as soluções é que as threads já possuem memória compartilhada, então não foi preciso criar uma região compartilhada para a 
+comunicação entre threads; já os dois processos filhos precisaram desse recurso para conseguir trocar informações. 
 
-Ainda assim, é mais eficiente e menos prolixo fazer a utilização de threads do que de processos.
+Outra diferença é que, no código de processos, os processos foram executados dentro da `main` e, como eles começam a executar a partir do ponto do `fork`, não
+foi preciso enviar os dados de chegada de cada pessoa. O contrário acontece na execução das threads; já que, quando elas são criadas, elas executam alguma 
+função específica e todos os dados precisam ser passados como parametro dessa função, o que acaba sendo um pouco mais trabalhoso. 
 
-### Explicação
+Além disso, para a comunicação entre threads ser eficiente (sem o uso de sinais, por exemplo), é preciso usar variáveis globais no código, algo que não é preciso
+na implementação de processos.
 
-O grupo utilizou o código abaixo como base para fazer modificações com as implementações de processos e threads: 
+Avaliando essas diferenças, a solução utilizando threads é mais eficiente para resolver o problema, isso porque com as threads a memória já é compartilhada e 
+não é preciso forçar o compartilhamento em uma estrutura caracterizada pelo não compartilhamento de memória. O único problema da utilização de threads seria
+para passar vários valores como parametro, mas isso pode ser facilmente resolvido com um struct.
 
-```
-#include <stdio.h>
-#include <stdlib.h>
+### Lógica
 
-// Variavel global para aramzenar o tempo que a escada ficou ligada
-int tempo = 0;
+A estratégia usada para resolver o problema foi a utilização duas filas, uma para cada sentido da escada. Como a linguagem C não possui uma implementação
+pronta para essa estrutura de dados, o grupo optou por utilizar dois vetores estáticos para simular o funcionamento das filas, isso foi feito com ajuda 
+de duas variáveis de controle: uma indicando qual é o próximo elemento e outra armazenando o tamanho da fila.
 
-int main() {
-    int n, direcao, direcaoInicial;
-    scanf("%d", &n);
+Depois de ler e armazenar cada dado, as duas filas são percorridas em ordem. Então, primeiro é avaliado qual é o sentido da primeira pessoa da fila, isso vai 
+determinar qual bloco de código será executado, o bloco da direção 0 ou o bloco da direção 1. Os dois blocos são espelhados e possuem exatamente o mesmo algoritmo:
 
-    // Cria uma matriz com duas linhas, uma para cada sentido da escada
-    // cada linha ira simular uma fila de pessoas
-    int **pessoas = (int **)malloc(n * sizeof(int *));
-    pessoas[0] = (int *)malloc(n * sizeof(int));
-    pessoas[1] = (int *)malloc(n * sizeof(int));
+1 . Verifica se o tempo de chegada da pessoa é maior que o tempo total de funcionamento da escada. Se sim, o tempo da escada é o tempo de chegada somado 10 do
+tempo de funcionamento.
 
-    // Le o tempo e a direção de cada pessoa e armazena a direcao inicial da escada
-    int tam[] = {0, 0};
-    while(tam[0] + tam[1] < n) {
-        int aux;
-        scanf("%d %d", &aux, &direcao);
+2 . Verifica se a pessoa é a primeira a entrar na escada. Se sim, o tempo de funcionamento da escada é o tempo de chegada da primeira pessoa somado a 10.
 
-        if(tam[0] + tam[1] == 0) {
-            direcaoInicial = direcao;
-        }
-    
-        if(direcao == 0) {
-            pessoas[0][tam[0]] = aux;
-            tam[0]++;
-        } else {
-            pessoas[1][tam[1]] = aux;
-            tam[1]++;
-        }
-    }
+3 . Verifica se o tempo de chegada da próxima pessoa da fila é menor que o tempo total de funcionamento da escada. Se sim, há uma outra verificação: se o 
+sentido da escada era o sentido contrário ao sentido atual. Se sim, todas as pessoas que chegaram antes da escada rolante trocar de sentido podem entrar juntas 
+e é somado 10 ao tempo total da escada. Independentemente do resultado da ultima condição, o programa vai procurar por pessoas que chegaram na escada quando
+já tinha alguém no mesmo sentido; nesse caso, é somado a diferença entre o tempo da última pessoa que entrou na escada e da nova pessoa que está entrando 
+na escada.
 
-    // Cria um vetor de inteiros para marcar o topo da fila
-    int pos[] = {0, 0};
+Esse algoritmo funciona para todos os casos testes fornecidos pelo professor.
 
-    // O tempo recebe o valor inicial da primeira pessoa
-    tempo = pessoas[direcaoInicial][0];
-    direcao = direcaoInicial;
-
-    // Loop que percorre todas as posicoes da matriz
-    while(pos[0] < tam[0] || pos[1] < tam[1]) {
-        // Se a primeira pessoa da direcao 0 for menor que a primeira pessoa da direcao 1 e a fila 0 nao estiver vazia
-        // ou se a fila 1 estiver vazia
-        if((pessoas[0][pos[0]] < pessoas[1][pos[1]] && pos[0] < tam[0]) || tam[1] == 0 || tam[1] == pos[1]) {
-            // Se o topo da fila for maior que o tempo (o tempo eh o tempo de chegada da pessoa somado ao
-            // tempo do percurso da escada)
-            if(pessoas[0][pos[0]] >= tempo) {
-                tempo = pessoas[0][pos[0]] + 10;
-                pos[0]++;
-                
-                // Atualiza a direcao da escada
-                direcao = 0;
-            }
-
-            // Se a pessoa do topo for a primeira a entrar na escada (adiciona 10 ao tempo)
-            if(pos[0] + pos[1] == 0) {
-                tempo += 10;
-                pos[0]++;
-            }
-
-            // Se o tempo de chegada da pessoa do topo for menor que o tempo e a fila nao estiver vazia
-            if(pessoas[0][pos[0]] <= tempo && pos[0] < tam[0]) {
-                // Se a direcao anterior foi 1
-                if(direcao == 1) {
-                    // Loop para encontrar todas as pessoas que podem entrar juntas na escada 
-                    while(pessoas[0][pos[0]] <= tempo && pos[0] < tam[0]) {
-                        pos[0]++;
-                    }
-
-                    // Atualiza o tempo da pessoa anterior para o instante que ela entrou na escada rolante
-                    pessoas[0][pos[0] - 1] = tempo;
-                    tempo += 10;
-                }
-                // Loop para encontrar todas as pessoas que podem entrar na escada aproveitando o intervalo de tempo anterior
-                // (no tempo adiciona a diferenca dos tempos de chegada entre a ultima pessoa e a atual)
-                while(pessoas[0][pos[0]] <= tempo && pos[0] < tam[0]) {
-                    tempo += (pessoas[0][pos[0]] - pessoas[0][pos[0] - 1]);
-                    pos[0]++;
-                }
-
-                // Atualiza a direcao da escada rolante
-                direcao = 0;
-            }
-        // Se a primeira pessoa da direcao 1 for menor que a primeira pessoa da direcao 0 e a fila 1 nao estiver vazia
-        // ou se a fila 0 estiver vazia
-        } else if((pessoas[0][pos[0]] > pessoas[1][pos[1]] && pos[1] < tam[1]) || tam[0] == 0 || tam[0] == pos[0]) {
-            // Se o topo da fila for maior que o tempo (o tempo eh o tempo de chegada da pessoa somado ao
-            // tempo do percurso da escada)
-            if(pessoas[1][pos[1]] > tempo) {
-                tempo = pessoas[1][pos[1]] + 10;
-                pos[1]++;
-                
-                // Atualiza a direcao da escada rolante
-                direcao = 1;
-            }
-
-            // Se a pessoa do topo for a primeira a entrar na escada (adiciona 10 ao tempo)
-            if(pos[0] + pos[1] == 0) {
-                tempo += 10;
-                pos[1]++;
-            }
-
-            // Se o tempo de chegada da pessoa do topo for menor que o tempo e a fila nao estiver vazia
-            if(pessoas[1][pos[1]] <= tempo && pos[1] < tam[1]) {
-                // Se a direcao anterior foi 0
-                if(direcao == 0) {
-                    // Loop para encontrar todas as pessoas que podem entrar juntas na escada 
-                    while(pessoas[1][pos[1]] <= tempo && pos[1] < tam[1]) {
-                        pos[1]++;
-                    }
-
-                    // Atualiza o tempo da pessoa anterior para o instante que ela entrou na escada rolante
-                    pessoas[1][pos[1] - 1] = tempo;
-                    tempo += 10;
-                }
-                // Loop para encontrar todas as pessoas que podem entrar na escada aproveitando o intervalo de tempo anterior
-                // (no tempo adiciona a diferenca dos tempos de chegada entre a ultima pessoa e a atual)
-                while(pessoas[1][pos[1]] <= tempo && pos[1] < tam[1]) {
-                    tempo += (pessoas[1][pos[1]] - pessoas[1][pos[1] - 1]);
-                    pos[1]++;
-                }
-
-                // Atualiza a direcao da escada rolante
-                direcao = 1;
-            }
-        }
-    }
-
-    // Exibe na tela o tempo total de funcionamento da escada rolante
-    printf("%d\n", tempo);
-    free(pessoas);
-
-    return 0;
-}
-```
+### Processos
 
 
-A premissa básica da estratégia para a resolução do problema foi utilizar uma matriz com duas linhas (uma para cada sentido da escada rolante) para simular o funcionamento de uma fila. 
-Cada fila foi preenchida com os valores dos tempos de chegada de cada pessoa. Depois disso, a matriz é percorrida uma vez imitando a entrada de cada pessoa na escada; nessa parte, o código possui uma série
-de verificações para adicionar a quantidade de segundos certa ao tempo total.
-
-> Obs.: Para mais detalhes da lógica usada, é possível verificar os comentários do código acima.
-
-#### Processos
-
-Para utilizar processos, o grupo optou por fazer cada processo filho como uma pessoa, sendo utilizado para fazer a atualização do tempo. O resultado final da implementação foi: 
-
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img1.jpg)
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img2.jpg)
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img3.jpg)
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img4.jpg)
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img5.jpg)
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img6.jpg)
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img7.jpg)
-
-> Obs.: Os comentários desse código explicam apenas o funcionamento dos processos dentro da implementação, para mais detalhes da lógica de resolução do problema, verificar os comentários do código base.
-
-Ao executar esse código, o grupo obteve todos os resultados como esperado, inclusive os casos de teste extras.
-
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img8.jpg)
 
 #### Threads
 
-Para utilizar threads, o grupo optou por fazer cada thread como uma pessoa, então cada thread foi criada com o intuito de atualizar o valor do tempo. O código final é: 
 
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img9.jpg)
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img10.jpg)
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img11.jpg)
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img12.jpg)
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img13.jpg)
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img14.jpg)
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img15.jpg)
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img16.jpg)
 
-> Obs.: Os comentários desse código explicam apenas o funcionamento das threads dentro da implementação, para mais detalhes da lógica de resolução do problema, verificar os comentários do código base.
-
-Ao executar esse código, o grupo obteve todos os resultados como esperado, inclusive os casos de teste extras.
-
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img17.jpg)
-
-#### Git 
-
-##### Criação dos arquivos
-
-![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img18.jpg)
