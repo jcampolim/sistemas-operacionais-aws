@@ -67,13 +67,51 @@ e é somado 10 ao tempo total da escada. Independentemente do resultado da ultim
 já tinha alguém no mesmo sentido; nesse caso, é somado a diferença entre o tempo da última pessoa que entrou na escada e da nova pessoa que está entrando 
 na escada.
 
-Esse algoritmo funciona para todos os casos testes fornecidos pelo professor.
+Esse algoritmo funciona para todos os casos testes fornecidos pelo professor e para melhor visualização do funcionamento da escada, em todos os casos de teste
+o algoritmo exibe na tela os instantes que a escada troca de direção ou quando a escada está vazia e entra uma pessoa nova, exibindo qual é a fila da pessoa e 
+o seu tempo de chegada.
 
 ### Processos
 
+O seguinte código foi usado para implementar a solução com processos.
 
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img1.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img2.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img3.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img4.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img5.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img6.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img7.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img8.jpg)
 
-#### Threads
+O código executa como o esperado, segue abaixo os primeiros 6 casos testes: 
 
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img9.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img10.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img11.jpg)
 
+### Threads
 
+O seguinte código foi usado para implementar a solução com threads.
+
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img12.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img13.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img14.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img15.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img16.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img17.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img18.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img19.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img20.jpg)
+
+O código executa como o esperado, segue abaixo os primeiros 6 casos testes: 
+
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img21.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img22.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img23.jpg)
+
+> Obs.: Para que o código compile com sucesso é necessário usar o comando `gcc -pthread thread.c -o thread`
+
+### Github
+
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj1-img24.jpg)
