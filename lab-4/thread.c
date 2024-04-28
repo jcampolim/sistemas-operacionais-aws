@@ -3,14 +3,14 @@
 #include <stdlib.h>
 
 // Defineos valores das dimenções das matrizes
-#define N 2  // Colunas da matriz A e linhas da matriz B
-#define M 2  // Linhas da matriz A
-#define P 3  // Colunas da matriz B
+#define N 3  // Coluna(s) da matriz A e linha(s) da matriz B
+#define M 3  // Linha(s) da matriz A
+#define P 1  // Coluna(s) da matriz B
 
 // Variável glolbal para armazenar a matriz C de resultado da multiplicação
 int c[M][P];
 
-// Struct que guarda a matriz A, a matriz B e qual linha deverá ser multiplicada
+// Struct que guarda a matriz A, o vetor B e qual linha deverá ser multiplicada
 typedef struct {
   int *a[M][N];
   int *b[N][P];
@@ -31,9 +31,9 @@ void *multiplicaLinha(void *t) {
 int main() {
   Matrizes m;
 
-  // Define os valores das matrizes A e B
-  int a[M][N] = {{3, 2}, {5, -1}};
-  int b[N][P] = {{6, 4, -2}, {0, 7, 1}};
+  // Define os valores das matriz A e do vetor B
+  int a[M][N] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+  int b[N][P] = {{1}, {2}, {3}};
 
   // Passa os valores da matriz A para a matriz A do struct Matrizes
   for(int i = 0; i < M; i++) {
@@ -42,7 +42,7 @@ int main() {
     }
   }
 
-  // Passa os valores da matriz B para a matriz B do struct Matrizes
+  // Passa os valores da matriz B para o vetor B do struct Matrizes
   for(int i = 0; i < N; i++) {
     for(int j = 0; j < P; j++) {
       m.b[i][j] = &b[i][j];
