@@ -30,6 +30,8 @@ mutuamente os recursos necessárias para continuar a execução.
 
 Depois de bloquear o acess, a transação é realizada e o acesso às contas é desbloqueado.
 
+Com isso, garantimos que a conta to possa receber mais de uma transferência simultânea, a conta from possa enviar mais de uma transferência simultânea, a conta from não possa enviar mais dinheiro se não tiver saldo, a conta to pode trocar de ordem com a conta from (ou seja, a conta que enviava pode receber e a conta que recebia pode enviar) e, por fim, que possam ser realizadas até 100 transações simultâneas de transferência.
+
 #### Execução
 
 Para exemplificar, foram criadas duas contas, `conta1` e `conta2`, com os saldos iniciais de 2000 e 1000, respectivamente. Então, são feitas 50 transações de valores variados da `conta1` para a `conta2` e mais 50 
