@@ -8,7 +8,11 @@
 
 Para solucionar o problema proposto pelo professor, o grupo desenvolveu o seguinte código:
 
-// prints
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj2-img1.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj2-img2.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj2-img3.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj2-img4.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj2-img5.jpg)
 
 > Obs.: para executar o código é preciso executar o comando `gcc -pthread -o codigo` no terminal
 
@@ -33,3 +37,8 @@ transações de valores variados da `conta2` para a `conta1`.
 
 Como todas as threads para realizar as transações são criadas praticamente o mesmo tempo, é o escalonador que decide qual thread irá executar primeiro. Podendo causar algumas diferenças a cada execução do código.
 Isso porque o valor da `conta2` não é o suficiente para cobrir todas as transações, resultando em variações no saldo final após a execução completa do programa.
+
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj2-img6.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj2-img7.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj2-img8.jpg)
+![](https://github.com/jcampolim/sistemas-operacionais-aws/blob/main/img/proj2-img9.jpg)
