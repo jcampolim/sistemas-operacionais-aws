@@ -19,14 +19,18 @@ typedef struct {
   Conta *to;
 } Transacao;
 
+// Cria duas contas genéricas que serão usadas como exemplo
+Conta conta1;
+Conta conta2;
+
 // Função que executa a transação
 void *transferencia(void *args) {
   Transacao *t = (Transacao *)args;
 
   // Usa o mutex para bloquear o acesso de outras threads ao saldo das duas
   // contas
-  pthread_mutex_lock(&t->to->lock);
-  pthread_mutex_lock(&t->from->lock);
+  pthread_mutex_lock(&conta1.lock);
+  pthread_mutex_lock(&conta2.lock);
 
   // Verifica se a conta from possui salto suficiente para realizar a transação
   if (t->from->saldo >= t->value) {
@@ -44,8 +48,8 @@ void *transferencia(void *args) {
   }
 
   // Desbloqueia o acesso às contas
-  pthread_mutex_unlock(&t->from->lock);
-  pthread_mutex_unlock(&t->to->lock);
+  pthread_mutex_unlock(&conta1.lock);
+  pthread_mutex_unlock(&conta2.lock);
 
   // Libera o espaço de memória alocada para os dados da transação e sinaliza o
   // final da thread
@@ -57,29 +61,35 @@ int main() {
   // Cria um vetor para armazenar o ID de todas as threads que serão criadas
   pthread_t tid[MAXN];
 
-  // Cria duas contas genéricas que serão usadas como exemplo
-  Conta conta1;
-  Conta conta2;
-
   // Inicializa o saldo das contas
-  conta1.saldo = 50;
-  conta2.saldo = 100;
+  conta1.saldo = 2000;
+  conta2.saldo = 1000;
+
+  Transacao **t = (Transacao **)malloc(MAXN * sizeof(Transacao *));
 
   // Inicia o mutex das contas
   pthread_mutex_init(&conta1.lock, NULL);
   pthread_mutex_init(&conta2.lock, NULL);
 
   // Repetição que cria as threads para realizar as transações
-  for (int i = 0; i < 10; i++) {
-    Transacao *t = (Transacao *)malloc(sizeof(Transacao));
-    t->value = i + 1;
-    t->from = &conta1;
-    t->to = &conta2;
-    pthread_create(&tid[i], NULL, transferencia, (void *)t);
+  for (int i = 0; i < 50; i++) {
+    t[i] = (Transacao *)malloc(sizeof(Transacao));
+    t[i]->value = i + 1;
+    t[i]->from = &conta1;
+    t[i]->to = &conta2;
+    pthread_create(&tid[i], NULL, transferencia, (void *)t[i]);
+  }
+
+  for (int i = 50; i < 100; i++) {
+    t[i] = (Transacao *)malloc(sizeof(Transacao));
+    t[i]->value = i + 1;
+    t[i]->from = &conta2;
+    t[i]->to = &conta1;
+    pthread_create(&tid[i], NULL, transferencia, (void *)t[i]);
   }
 
   // Espera todas as threads terminarem de executar
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < 100; i++) {
     pthread_join(tid[i], NULL);
   }
 
@@ -92,6 +102,8 @@ int main() {
   pthread_mutex_destroy(&conta1.lock);
   pthread_mutex_destroy(&conta2.lock);
 
+  free(t);
+  
   return 0;
 }
 
